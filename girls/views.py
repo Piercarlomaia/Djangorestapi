@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import  cursos, aulas, User2
-from .serializers import  CursosSerializer, AulasSerializer, UserSerializer
+from .serializers import  CursosSerializer, AulasSerializer, UserSerializer, CursosAlunosSerializer, Cursosalunosid
+
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 
@@ -141,7 +142,7 @@ class AulasaAdminViewDetail(APIView):
         #if serializer.is_valid():
         return Response(HTTP_204_NO_CONTENT)
 
-class ProfessorView(APIView):
+class ProfessorCursoView(APIView):
 
     permission_classes = (IsAuthenticated,)
     def get(self, request, *args, **kwargs):
@@ -166,26 +167,140 @@ class ProfessorView(APIView):
 
             return Response(serializer.errors)
 
-class ProfessorViewDetail(APIView):
 
-    permission_classes = (IsAdminUser,)
+
+
+class ProfessorCursoViewDetail(APIView):
+
+    permission_classes = (IsAuthenticated,)
     def get(self, request, pk, *args, **kwargs):
 
-        queryset = User2.objects.filter(pk=pk)
-        serializer = UserSerializer(queryset, many=True)
-        #if serializer.is_valid():
-        return Response(serializer.data)
+        if request.user.is_professor:
+            queryset = cursos.objects.filter(pk=pk, professores=self.request.user)
+
+            serializer = CursosSerializer(queryset, many=True)
+            # print(serializer)
+            return Response(serializer.data)
 
     def put(self, request, pk, *args, **kwargs):
-        queryset = User2.objects.get(pk=pk)
-        serializer = UserSerializer(queryset, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        profile = cursos.objects.get(pk=pk, professores=self.request.user)
+        serializer = CursosSerializer(profile, data=request.data)
+        if request.user.is_professor:
+            queryset = list(cursos.objects.filter(pk=pk, professores=self.request.user).values_list("usuarios", flat=True))
+
+            #print(queryset.values_list("usuarios", flat=True))
+
+            if serializer.is_valid():
+                serializer.validated_data["id"] = pk
+                serializer.validated_data["usuarios"] = queryset
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors)
+
+    def delete(self, request, pk, *args, **kwargs):
+        if request.user.is_professor:
+            queryset = cursos.objects.get(pk=pk, professores=self.request.user)
+            queryset.delete()
+            # if serializer.is_valid():
+            return Response(HTTP_204_NO_CONTENT)
+
+
+class ProfessorAulasView(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, *args, **kwargs):
+        if request.user.is_professor:
+            queryset = aulas.objects.filter(professor=self.request.user)
+
+            serializer = AulasSerializer(queryset, many=True)
+            #print(serializer)
             return Response(serializer.data)
 
         return Response(serializer.errors)
+    def post(self, request, *args, **kwargs):
+        serializer = AulasSerializer(data=request.data)
+        if request.user.is_professor:
+
+            if serializer.is_valid():
+                serializer.validated_data["professor"] = self.request.user
+
+
+                serializer.save()
+                return Response(serializer.data, status=HTTP_201_CREATED)
+
+            return Response(serializer.errors)
+
+class ProfessorAulasDetailView(APIView):
+
+
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, pk, *args, **kwargs):
+
+        if request.user.is_professor:
+            queryset = aulas.objects.filter(pk=pk, professor=self.request.user)
+
+            serializer = AulasSerializer(queryset, many=True)
+            # print(serializer)
+            return Response(serializer.data)
+
+    def put(self, request, pk, *args, **kwargs):
+        profile = aulas.objects.get(pk=pk, professor=self.request.user)
+        serializer = AulasSerializer(profile, data=request.data)
+        if request.user.is_professor:
+
+            #print(queryset.values_list("usuarios", flat=True))
+
+            if serializer.is_valid():
+                serializer.validated_data["id"] = pk
+                serializer.validated_data["professor"] = self.request.user
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors)
+
     def delete(self, request, pk, *args, **kwargs):
-        queryset = User2.objects.get(pk=pk)
-        queryset.delete()
-        #if serializer.is_valid():
-        return Response(HTTP_204_NO_CONTENT)
+        if request.user.is_professor:
+            queryset = aulas.objects.get(pk=pk, professor=self.request.user)
+            queryset.delete()
+            # if serializer.is_valid():
+            return Response(HTTP_204_NO_CONTENT)
+
+class AlunoCursoView(APIView):
+
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, *args, **kwargs):
+
+        queryset = cursos.objects.filter()
+
+        serializer = CursosAlunosSerializer(queryset, many=True)
+        #print(serializer)
+        return Response(serializer.data)
+
+class AlunoCursoDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk, *args, **kwargs):
+
+
+        queryset = cursos.objects.filter(pk=pk )
+
+        serializer = CursosAlunosSerializer(queryset, many=True)
+        # print(serializer)
+        return Response(serializer.data)
+
+    def put(self, request, pk, *args, **kwargs):
+        queryset = cursos.objects.get(pk=pk)
+        serializer = Cursosalunosid(queryset, data=request.data)
+
+
+
+        if serializer.is_valid():
+
+            userlist = list(cursos.objects.filter(pk=pk).values_list("usuarios", flat=True))
+            userlist.append(self.request.user.id)
+            print(userlist)
+            serializer.validated_data["usuarios"] = userlist
+            serializer.save()
+            return Response(request.data)
+
+
+        return Response(serializer.errors)

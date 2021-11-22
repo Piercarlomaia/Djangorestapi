@@ -11,6 +11,16 @@ class CursosSerializer(serializers.ModelSerializer):
         model = cursos
         fields = '__all__'
 
+class CursosAlunosSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = cursos
+        fields = ('id', 'Nome', 'descricao','categoria', 'professores', 'datadepublicacao', 'datadeedicao')
+
+class Cursosalunosid(serializers.ModelSerializer):
+    class Meta:
+        model = cursos
+        fields = ("usuarios", )
+
 class AulasSerializer(serializers.ModelSerializer):
     class Meta:
         model = aulas

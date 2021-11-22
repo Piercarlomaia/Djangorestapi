@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from girls.views import  CursosAdminView, CursosaAdminViewDetail, AulasAdminView, AulasaAdminViewDetail, UserAdminView, UseraAdminViewDetail
-from girls.views import ProfessorView, ProfessorViewDetail
+from girls.views import ProfessorCursoView, ProfessorCursoViewDetail, ProfessorAulasView, AlunoCursoView, ProfessorAulasDetailView, AlunoCursoDetailView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
@@ -24,8 +24,12 @@ urlpatterns = [
     path("api/admin/cursos", CursosAdminView.as_view(), name="CursosAdmin"),
     path("api/admin/user", UserAdminView.as_view(), name="UserAdmin"),
     path("api/admin/aulas", AulasAdminView.as_view(), name="AulasAdmin"),
-    path("api/professor/cursos", ProfessorView.as_view(), name="Professorview"),
-
+    path("api/professor/cursos", ProfessorCursoView.as_view(), name="Professorcursosview"),
+    path("api/professor/aulas", ProfessorAulasView.as_view(), name="Professoraulasview"),
+    path("api/professor/cursos/<int:pk>", ProfessorCursoViewDetail.as_view(), name="Professorcursosdetail"),
+    path("api/professor/aulas/<int:pk>", ProfessorAulasDetailView.as_view(), name="Professoraulasdetailview"),
+    path("api/alunos/cursos", AlunoCursoView.as_view(), name="Alunoscursosview"),
+    path("api/alunos/cursos/<int:pk>", AlunoCursoDetailView.as_view(), name="Alunocursodetailview"),
     path("api/admin/cursos/<int:pk>", CursosaAdminViewDetail.as_view(), name="CursosAdmindetail"),
     path("api/admin/user/<int:pk>", UseraAdminViewDetail.as_view(), name="UserAdmindetail"),
     path("api/admin/aulas/<int:pk>", AulasaAdminViewDetail.as_view(), name="AulasAdmindetail"),
