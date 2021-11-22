@@ -31,5 +31,3 @@ urlpatterns = [
     path("api/admin/aulas/<int:pk>", AulasaAdminViewDetail.as_view(), name="AulasAdmindetail"),
 
 ]
-
-#aqui apaga também
