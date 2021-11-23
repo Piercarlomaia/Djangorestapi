@@ -296,11 +296,20 @@ class AlunoCursoDetailView(APIView):
         if serializer.is_valid():
 
             userlist = list(cursos.objects.filter(pk=pk).values_list("usuarios", flat=True))
-            userlist.append(self.request.user.id)
-            print(userlist)
-            serializer.validated_data["usuarios"] = userlist
-            serializer.save()
-            return Response(request.data)
+            if self.request.user.id in userlist:
+                userlist.remove(self.request.user.id)
+                print(userlist)
+                print("removed")
+                serializer.validated_data["usuarios"] = userlist
+                serializer.save()
+                return Response(request.data)
+            else:
+                userlist.append(self.request.user.id)
+                print(userlist)
+                print("append")
+                serializer.validated_data["usuarios"] = userlist
+                serializer.save()
+                return Response(request.data)
 
 
         return Response(serializer.errors)
