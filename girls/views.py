@@ -313,3 +313,20 @@ class AlunoCursoDetailView(APIView):
 
 
         return Response(serializer.errors)
+
+
+class AlunoAulasDetailView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk_cursos,  *args, **kwargs):
+        userlist = list(cursos.objects.filter(id=pk_cursos).values_list("usuarios", flat=True))
+        if self.request.user.id in userlist:
+
+            aulaslist = list(cursos.objects.filter(id=pk_cursos).values_list("aulas", flat=True))
+            queryset = aulas.objects.filter(id__in=aulaslist)
+
+
+            serializer = AulasSerializer(queryset, many=True)
+            # print(serializer)
+            return Response(serializer.data)
+

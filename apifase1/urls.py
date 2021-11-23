@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from girls.views import  CursosAdminView, CursosaAdminViewDetail, AulasAdminView, AulasaAdminViewDetail, UserAdminView, UseraAdminViewDetail
-from girls.views import ProfessorCursoView, ProfessorCursoViewDetail, ProfessorAulasView, AlunoCursoView, ProfessorAulasDetailView, AlunoCursoDetailView
+from girls.views import ProfessorCursoView, ProfessorCursoViewDetail, ProfessorAulasView, AlunoCursoView, ProfessorAulasDetailView, AlunoCursoDetailView, AlunoAulasDetailView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
@@ -30,6 +30,8 @@ urlpatterns = [
     path("api/professor/aulas/<int:pk>", ProfessorAulasDetailView.as_view(), name="Professoraulasdetailview"),
     path("api/alunos/cursos", AlunoCursoView.as_view(), name="Alunoscursosview"),
     path("api/alunos/cursos/<int:pk>", AlunoCursoDetailView.as_view(), name="Alunocursodetailview"),
+    path("api/alunos/cursos/<int:pk_cursos>/aulas/", AlunoAulasDetailView.as_view(), name="Alunosaulasdetailview"),
+
     path("api/admin/cursos/<int:pk>", CursosaAdminViewDetail.as_view(), name="CursosAdmindetail"),
     path("api/admin/user/<int:pk>", UseraAdminViewDetail.as_view(), name="UserAdmindetail"),
     path("api/admin/aulas/<int:pk>", AulasaAdminViewDetail.as_view(), name="AulasAdmindetail"),
