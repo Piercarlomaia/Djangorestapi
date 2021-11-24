@@ -28,7 +28,9 @@ class UserAdminView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            instance = serializer.save()
+            instance.set_password(instance.password)
+            instance.save()
             return Response(serializer.data, status=HTTP_201_CREATED)
 
         return Response(serializer.errors)
@@ -47,7 +49,9 @@ class UseraAdminViewDetail(APIView):
         queryset = User2.objects.get(pk=pk)
         serializer = UserSerializer(queryset, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            instance = serializer.save()
+            instance.set_password(instance.password)
+            instance.save()
             return Response(serializer.data)
 
         return Response(serializer.errors)
@@ -330,3 +334,47 @@ class AlunoAulasDetailView(APIView):
             # print(serializer)
             return Response(serializer.data)
 
+class UsuariosView(APIView):
+
+    permission_classes = (AllowAny,)
+    def get(self, request, *args, **kwargs):
+        if self.request.user.id == None:
+            return Response("Usuario não está logado, loge em /api-auth/ ou crie seu usuário através do método POST")
+        elif request.user.is_admin:
+            return Response("Você está logado como Admin. Faça o Controle pelo painel de administrador em api/admin/")
+        else:
+            queryset = User2.objects.filter(pk = self.request.user.id)
+            serializer = UserSerializer(queryset, many=True)
+
+            return Response(serializer.data)
+    def post(self, request, *args, **kwargs):
+        if request.user.is_admin:
+            return Response("Você está logado como Admin. Faça o Controle pelo painel de administrador em api/admin/")
+        else:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.validated_data["is_staff"] = False
+                serializer.validated_data["admin"] = False
+                instance = serializer.save()
+                instance.set_password(instance.password)
+                instance.save()
+
+
+                return Response(serializer.data, status=HTTP_201_CREATED)
+
+            return Response(serializer.errors)
+
+    def put(self, request, *args, **kwargs):
+        if request.user.is_admin:
+            return Response("Você está logado como Admin. Faça o Controle pelo painel de administrador em api/admin/")
+        else:
+            queryset = User2.objects.filter(pk=self.request.user.id)
+            serializer = UserSerializer(queryset, data=request.data)
+            if serializer.is_valid():
+                serializer.validated_data["is_staff"] = False
+                serializer.validated_data["admin"] = False
+                serializer.validated_data["id"] = self.request.user.id
+                instance = serializer.save()
+                instance.set_password(instance.password)
+                instance.save()
+                return Response(serializer.data)
