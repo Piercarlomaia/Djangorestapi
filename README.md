@@ -1,21 +1,5 @@
-# Djangorestapi
-<<<<<<< HEAD
-=======
-# api-fase-1
->>>>>>> 917e665522e44abe2ef3370976ada4ae7b422d54
-===================================================================================================================================================
-                                                                      GRUPO
-                                                                    Safe City													   
-
-                                                            João Vítor de Moraes Ribeiro - RM86100
-                                                            Piercarlo Marques de Souza e Silva Maia - RM85787
-                                                                Aline de Assis Pinto - RM85236
-                                                            Leandro Augusto Guidon - RM85756
-                                                            Rafael Elias Bonfim Pinto - RM85149
 
 
-
-Link do projeto no GITHUB: https://github.com/Piercarlomaia/Djangorestapi
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                                                     INSTRUÇÕES
 												  
